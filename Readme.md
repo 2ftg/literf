@@ -28,16 +28,25 @@ As that gives us access to existing, proven designs with support from the commun
 
 Some links to candidate parts and information on them below.
 
-#### Maxim MAX2837+MAX5864 Transceiver + AFE
+#### Maxim MAX2837 Transceiver + MAX5864 AFE with AT86RF215
 Both of these are expensive and hard to find. It might change now that Analog Devices owns Maxim, or get worse.   
 Replacing these is the origin of this project. I had a terrible time sourcing them for my hackRF build.   
 
 MAX2837 info:   
 https://www.maximintegrated.com/en/products/comms/wireless-rf/MAX2837.html   
+Datasheet: https://datasheets.maximintegrated.com/en/ds/MAX2837.pdf 
 
-MAX5864 info:   
-
+MAX5864 info:  
 https://www.maximintegrated.com/en/products/analog/data-converters/analog-front-end-ics/MAX5864.html
+
+MAX2837 covers 2300-2700MHz in turn AT86RF215 covers only a part of the same spectrum. The 2400-2400-2483.5MHz ISM band.
+This is not a major problem as hacKRF uses a 2.4GHz IF with a SAW filter.   
+This is compatible with using AT86RF215.
+
+AT86RF215 info:
+https://www.microchip.com/en-us/product/AT86RF215
+Datasheet: https://ww1.microchip.com/downloads/en/DeviceDoc/45099A-AT86RF215_E_US_102714_Web.pdf
+
 
 #### Xilinx XC2C64A-7VQG100C CPLD with Lattice ICE40LP1k-QN84 FPGA
 0 stock and 52 week lead time on Digikey, nuff said:   
@@ -53,16 +62,31 @@ iCE40LP family datasheet:    https://www.latticesemi.com/~/media/LatticeSemi/Doc
 
 #### SiLabs/Skyworks Si5351C replaced with Hangzhou Ruimeng Tech MS5351M.
 
-Skyworks Si5351C is in QFN case and has 8 outputs, compared to MS5351M's 3, so some work is likely needed. But they are register compatible and MS5351M 1:1 replaces Si5351B in almost all applications. 
+Skyworks Si5351C is in QFN case and has 8 outputs, compared to MS5351M's 3, so some work is likely needed. But they are register compatible and MS5351M 1:1 replaces Si5351B in almost all applications.   
+This requires further thought in the clock tree side of things. 
 
+Source and datasheet.   
+https://lcsc.com/product-detail/Clock-Generators-Frequency-Synthesizers-PLL_Hangzhou-Ruimeng-Tech-MS5351M_C1509083.html   
+
+QRP-Labs investigation that finds MS5351 meeting or exeeding Si5351.   
+http://www.qrp-labs.com/synth/ms5351m.html
+
+Si5351C stock situation:   
+https://octopart.com/si5351c-b-gm-silicon+labs-24879781
 
 
 ### Component substitutions that are under consideration:
-1. NXP LPC MCU substitution with something cheaper and more available.
+1. NXP LPC4320FBD144 MCU substitution with something cheaper and more available.
 2. TI TPS62410 dual VREG with two Microchip switchers and point of load low noise LDO's for RF. Due to availability and noise.
 3. Skyworks SKY13317 RF switch with Maxcend MXD8641. Due to price and availability. Also for better frontend.
 
 Some links to candidate parts and information on them.
+
+NXP LPC4320FBD144 has:   
+ARM Cortex-M4F core capable of 204MHz and a Arm Cortex-M0 co-processor running at frequencies up to 204MHz.   
+200kB SRAM
+High-speed USB 2.0 Host/Device interface.
+
 
 ##### WCH CH32V307VCT6 MCU candidate.
 I'm unsure if this is fast enough. It's RISC-V! 
@@ -72,15 +96,20 @@ LQFP100 case https://lcsc.com/product-detail/Microcontroller-Units-MCUs-MPUs-SOC
 
 Used in [iCEBreaker 1.99 hardware](https://github.com/icebreaker-fpga/icebreaker/tree/hw-v1.99-evaluation-designs/hardware/v1.99a) with Lattice iCE40UP5K.  
 
-##### NXP CH32V307VCT6 MCU candidate.
+##### NXP i.MXRT MCU candidates
 
-##### MS5351M clock generator 
+i.MX RT1024 Cortex-M7 @500 MHz 256 kB SRAM 144 LQFP 
+i.MX RT1020 Cortex-M7 @500 MHz 256 kB SRAM 100 LQFP & 144 LQFP 
 
-Source and datasheet.   
-https://lcsc.com/product-detail/Clock-Generators-Frequency-Synthesizers-PLL_Hangzhou-Ruimeng-Tech-MS5351M_C1509083.html   
 
-QRP-Labs investigation that finds MS5351 meeting or exeeding Si5351.   
-http://www.qrp-labs.com/synth/ms5351m.html
+##### TPS62410DRCR info and repalcement candidates
+
+[Octopart shows some stock, but only direct from TI or from Farnell, which is stingy about selling to individuals ](https://octopart.com/search?q=TPS62410DRCR&currency=EUR&specs=0)   
+This is annoying and thus needs a good replacement. 
+
+TPS62410 product page with info and datasheet:   
+https://www.ti.com/product/TPS62410
+
 
 ##### Maxcend MXD8641 SP4T RF switch
 Source and data.
@@ -89,7 +118,9 @@ https://lcsc.com/product-detail/RF-Switches_Maxscend-MXD8641_C285559.html
 NanoVNA v2, they use Maxcend switches and later also MS5351M.   
 https://github.com/nanovna-v2/NanoVNA2
 
-Some parts selection logic I have used:   
+Other Maxcend RF swithces are also available on LCSC.net (https://lcsc.com/products/RF-Switches_980.html?brand=11684)
+
+#### Some parts selection logic I have used:   
 Needs to be cheaper than what it's replacing.   
 If not cheaper, then more available.   
 If possible, already used and thus qualified by somebody else. Possibly lower risk of surprises that way.   
@@ -101,8 +132,9 @@ Available from JLCPCB SMT assembly, LCSC.com , TME.eu, Mouser or Digikey.
 ##### Other minor motivations and changes:
 PROPER REF DES on PCB.
 
+One of these days I'll clean this up and use the wiki for all the component talk.
 
 #### Contact
 [@2ftg1](https://twitter.com/2ftg1/) on Twitter   
-ftg on Ircnet with shell, as ftg on Libera.Chat from time to time. 
+As ftg on Ircnet with shell, as ftg on Libera.Chat from time to time. 
 
